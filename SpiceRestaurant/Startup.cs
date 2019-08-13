@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using SpiceRestaurant.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SpiceRestaurant.Models;
 
 namespace SpiceRestaurant
 {
@@ -41,6 +42,10 @@ namespace SpiceRestaurant
             services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            //services.AddTransient<IPieRepository, PieRepository>();
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
+
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
