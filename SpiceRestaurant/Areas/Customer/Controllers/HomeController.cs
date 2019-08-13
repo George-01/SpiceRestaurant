@@ -8,6 +8,7 @@ using SpiceRestaurant.Models;
 
 namespace SpiceRestaurant.Controllers
 {
+    [Area("Customer")]
     public class HomeController : Controller
     {
         public IActionResult Index()
