@@ -90,7 +90,7 @@ namespace SpiceRestaurant.Areas.Admin.Controllers
             return View(category);
         }
 
-        //POST - DELET
+        //POST - DELETE
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DELETEConfirmed(int id)
