@@ -22,10 +22,10 @@
             <table class="table table-striped border">
                 <tr class="table-secondary">
                     <th>
-                        @Html.DisplayNameFor(m => m.Category.Name)
+                        @Html.DisplayNameFor(m => m.Name)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.Name)
+                        @Html.DisplayNameFor(m => m.Category.Name)
                     </th>
                     <th></th>
                     <th></th>
@@ -34,10 +34,10 @@
                 {
                 <tr>
                     <td>
-                        @Html.DisplayFor(m => item.Category.Name)
+                        @Html.DisplayFor(m => item.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(m => item.Name)
+                        @Html.DisplayFor(m => item.Category.Name)
                     </td>
                     <td>
                         <partial name="_TableButtonPartial" model="item.Id" />
