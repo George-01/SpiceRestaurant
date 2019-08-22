@@ -70,10 +70,12 @@
     </footer>
 
     <environment include="Development">
+        <script src="https://cdn.tiny.cloud/1/aybbwi4ddbp9n7r8x35gw8zkkbj4x0atyf1w7hdovioifrbs/tinymce/5/tinymce.min.js"></script>
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
     </environment>
     <environment exclude="Development">
+        <script src="https://cdn.tiny.cloud/1/aybbwi4ddbp9n7r8x35gw8zkkbj4x0atyf1w7hdovioifrbs/tinymce/5/tinymce.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
                 asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
                 asp-fallback-test="window.jQuery"
