@@ -9,7 +9,7 @@
 <h1 class="text-info">Create MenuItem</h1>
 <br />
 
-<form  method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data">
     <div class="border backgroundWhite">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
@@ -81,7 +81,7 @@
 
 </form>
 
-@section Scripts{ 
+@section Scripts{
     <script>
         tinymce.init({
             selector: 'textarea',
@@ -94,8 +94,8 @@
         $(document).ready(function () {
             getSubCategory();
             $('#CategoryId').change(function () {
-                getSubCategory();//SubCategoryId
-            })
+                getSubCategory();
+            });
         });
 
         function getSubCategory() {
@@ -105,7 +105,7 @@
                 var items = '';
                 $('#SubCategoryId').empty();
                 $.each(data, function (i, subcategory) {
-                    items += "<option value='" + subcategory.vaue + "'>" + subcategory.text + "</option>";
+                    items += "<option value='" + subcategory.value + "'>" + subcategory.text + "</option>";
                 });
 
                 $('#SubCategoryId').html(items);
@@ -115,6 +115,6 @@
 
 
 
-    @{ await Html.RenderPartialAsync("__ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
 
