@@ -15,6 +15,7 @@ namespace SpiceRestaurant.Models
         public string Name { get; set; }
 
         [Required]
+        [Display(Name ="Coupon Type")]
         public string CouponType { get; set; }
 
         public enum ECouponType { Percent = 0, Dollar = 1 }
@@ -23,11 +24,12 @@ namespace SpiceRestaurant.Models
         public double Discount { get; set; }
 
         [Required]
+        [Display(Name ="Minimum Amount")]
         public double MinimumAmount { get; set; }
 
         public byte[] Picture { get; set; }
 
-        public bool isActive { get; set; }
+        public bool IsActive { get; set; }
 
 
     }
