@@ -127,9 +127,6 @@ namespace SpiceRestaurant.Areas.Admin.Controllers
                 return View(MenuItemVM);
             }
 
-            //_db.MenuItem.Add(MenuItemVM.MenuItem);
-            //await _db.SaveChangesAsync();
-
             //Save images
 
             string webRootPath = _hostingEnvironment.WebRootPath;

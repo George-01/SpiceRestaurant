@@ -4,16 +4,31 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SpiceRestaurant.Data;
 using SpiceRestaurant.Models;
+using SpiceRestaurant.Models.ViewModels;
 
 namespace SpiceRestaurant.Controllers
 {
     [Area("Customer")]
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly ApplicationDbContext _db;
+
+        public HomeController(ApplicationDbContext db)
         {
-            return View();
+            _db = db;
+        }
+        public async Task<IActionResult> Index()
+        {
+            IndexViewModel indexVM = new IndexViewModel()
+            {
+                MenuItem = await _db.MenuItem.Include(c => c.Category).Include(s => s.SubCategory).ToListAsync(),
+                Category = await _db.Category.ToListAsync(),
+                Coupon = await _db.Coupon.Where(c => c.IsActive == true).ToListAsync()
+            };
+            return View(indexVM);
         }
 
         public IActionResult Privacy()
