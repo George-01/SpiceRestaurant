@@ -16,7 +16,7 @@ namespace SpiceRestaurant.Models
 
         public int Id { get; set; }
 
-        public int ApplicationUserId { get; set; }
+        public string ApplicationUserId { get; set; }
 
 
         [NotMapped]
