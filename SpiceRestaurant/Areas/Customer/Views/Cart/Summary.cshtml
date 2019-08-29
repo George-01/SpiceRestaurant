@@ -37,7 +37,7 @@
                                             <label>Name</label>
                                         </div>
                                         <div class="col-9">
-                                            <input asp-for="@Model.OrderHeader.PickupName" type="text" class="form-control" />
+                                            <input asp-for="@Model.OrderHeader.PickupName" id="txtName" type="text" class="form-control" />
                                         </div>
                                     </div>
                                     <div class="row my-1">
@@ -45,7 +45,7 @@
                                             <label>Phone</label>
                                         </div>
                                         <div class="col-9">
-                                            <input asp-for="@Model.OrderHeader.PhoneNumber" type="text" class="form-control" />
+                                            <input asp-for="@Model.OrderHeader.PhoneNumber" id="txtPhone" type="text" class="form-control" />
                                         </div>
                                     </div>
                                     <div class="row my-1">
@@ -113,7 +113,11 @@
                         </div>
                     </div>
                     <div class="card-footer">
-
+                        <div class="row">
+                            <div class="col-12 col-md-4 offset-md-8">
+                                <button type="submit" id="btnPlaceOrder" onclick="return validateInput()" value="Place order" class="btn btn-success form-control">Place Order</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -129,8 +133,88 @@
 @section Scripts{
     <script>
         $(function () {
-            $("#datepicker").datepicker({ minDate: 0, maxDate: "+1W" });
+
+            var minDt = 0;
+            if (getTimeFromCurrentDate >= 20) {
+                minDt = 1;
+            }
+
+
+            $("#datepicker").datepicker({ minDate: minDt, maxDate: "+1W" });
+            $("#timepicker").timepicker({ 'minTime': '11:00 AM', 'maxTime': '9:00 PM', step: '30' });//, 'scrollDefault': 'now'
         });
+
+
+        function setPickUpTime() {
+            var dateSelected = document.getElementById("datepicker").value;
+            var dt = new Date(dateSelected);
+            var today = new Date();
+
+            dt.setHours(0, 0, 0, 0);
+            if (dt > today) {
+                selectedTime = '11:00am';
+            }
+            else {
+                selectedTime = getTimeFromCurrentDate();
+            }
+            $('#timepicker').timepicker('option', 'minTime', selectedTime);
+        }
+
+
+        function getTimeFromCurrentDate() {
+            var currentDt = new Date();
+
+            var minTime = "";
+            if (currentDt.getHours() < 11) {
+                minTime = '12:00pm';
+            }
+            else {
+                if (currentDt.getMinutes() < 30) {
+                    minTime = (currentDt.getHours() + 1).toString() + ':30pm'
+                }
+                else {
+                    minTime = (currentDt.getHours() + 2).toString() + ':00pm'
+                }
+            }
+            return minTime;
+        }
+
+        $('#datepicker').change(function () {
+            setPickUpTime();
+        });
+
+
+        function validateInput() {
+            var time = document.getElementById("timepicker").value;
+            var dt = document.getElementById("datepicker").value;
+            var name = document.getElementById("txtName").value;
+            var phone = document.getElementById("txtPhone").value;
+            if (time.toString() == '') {
+                alert("Please select pickup time");
+                return false;
+            }
+            else {
+                if (dt.toString() == '') {
+                    alert("Please select pickup date");
+                    return false;
+                }
+                else {
+                    if (name.toString() == '') {
+                        alert("Please enter pickup name");
+                        return false;
+                    }
+                    else {
+                        if (phone.toString() == '') {
+                            alert("Please enter pickup phone number");
+                            return false;
+                        }
+                        else {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
     </script>
 }
 
