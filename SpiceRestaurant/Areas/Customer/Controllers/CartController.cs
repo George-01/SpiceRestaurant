@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpiceRestaurant.Data;
+using SpiceRestaurant.Models;
 using SpiceRestaurant.Models.ViewModels;
 using SpiceRestaurant.Utility;
 
@@ -47,7 +48,7 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
                 list.MenuItem = await _db.MenuItem.FirstOrDefaultAsync(m => m.Id == list.MenuItemId);
                 detailCart.OrderHeader.OrderTotal = detailCart.OrderHeader.OrderTotal + (list.MenuItem.Price * list.Count);
                 list.MenuItem.Description = SD.ConvertToRawHtml(list.MenuItem.Description);
-                if(list.MenuItem.Description.Length > 250)
+                if(list.MenuItem.Description.Length > 300)
                 {
                     list.MenuItem.Description = list.MenuItem.Description.Substring(0, 00) + "...";
                 }
@@ -65,6 +66,48 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
 
             return View(detailCart);
         }
+        public async Task<IActionResult> Summary()
+        {
+            detailCart = new OrderDetailsCart()
+            {
+                OrderHeader = new Models.OrderHeader()
+            };
+
+            detailCart.OrderHeader.OrderTotal = 0;
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            ApplicationUser applicationUser = await _db.ApplicationUser.Where(c => c.Id == claim.Value).FirstOrDefaultAsync();
+            var cart = _db.ShoppingCart.Where(c => c.ApplicationUserId == claim.Value);
+            if (cart != null)
+            {
+                detailCart.listCart = cart.ToList();
+            }
+
+            foreach (var list in detailCart.listCart)
+            {
+                list.MenuItem = await _db.MenuItem.FirstOrDefaultAsync(m => m.Id == list.MenuItemId);
+                detailCart.OrderHeader.OrderTotal = detailCart.OrderHeader.OrderTotal + (list.MenuItem.Price * list.Count);
+                
+            }
+            detailCart.OrderHeader.OrderTotalOriginal = detailCart.OrderHeader.OrderTotal;
+            detailCart.OrderHeader.PickupName = applicationUser.Name;
+            detailCart.OrderHeader.PhoneNumber = applicationUser.PhoneNumber;
+            detailCart.OrderHeader.PickupTime = DateTime.Now;
+
+
+            if (HttpContext.Session.GetString(SD.ssCouponCode) != null)
+            {
+                detailCart.OrderHeader.CouponCode = HttpContext.Session.GetString(SD.ssCouponCode);
+                var couponFromDb = await _db.Coupon.Where(c => c.Name.ToLower() == detailCart.OrderHeader.CouponCode.ToLower()).FirstOrDefaultAsync();
+                detailCart.OrderHeader.OrderTotal = SD.DiscountedPrice(couponFromDb, detailCart.OrderHeader.OrderTotalOriginal);
+            }
+
+
+
+            return View(detailCart);
+        }
+
 
         public IActionResult AddCoupon()
         {
@@ -80,6 +123,46 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
         public IActionResult RemoveCoupon()
         {
             HttpContext.Session.SetString(SD.ssCouponCode, string.Empty);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Plus(int CartId)
+        {
+            var cart = await _db.ShoppingCart.FirstOrDefaultAsync(c => c.Id == CartId);
+            cart.Count += 1;
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Minus(int CartId)
+        {
+            var cart = await _db.ShoppingCart.FirstOrDefaultAsync(c => c.Id == CartId);
+            if(cart.Count == 1)
+            {
+                _db.ShoppingCart.Remove(cart);
+                await _db.SaveChangesAsync();
+
+                var cnt = _db.ShoppingCart.Where(u => u.ApplicationUserId == cart.ApplicationUserId).ToList().Count;
+                HttpContext.Session.SetInt32(SD.ssShoppingCartCount, cnt);
+            }
+            else
+            {
+                cart.Count -= 1;
+                await _db.SaveChangesAsync();
+            }
+            
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Remove(int CartId)
+        {
+            var cart = await _db.ShoppingCart.FirstOrDefaultAsync(c => c.Id == CartId);
+            _db.ShoppingCart.Remove(cart);
+            await _db.SaveChangesAsync();
+
+            var cnt = _db.ShoppingCart.Where(u => u.ApplicationUserId == cart.ApplicationUserId).ToList().Count;
+            HttpContext.Session.SetInt32(SD.ssShoppingCartCount, cnt);
 
             return RedirectToAction(nameof(Index));
         }
