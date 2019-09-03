@@ -34,12 +34,12 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
             };
 
             detailCart.OrderHeader.OrderTotal = 0;
-             
+
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             var cart = _db.ShoppingCart.Where(c => c.ApplicationUserId == claim.Value);
-            if(cart != null)
+            if (cart != null)
             {
                 detailCart.listCart = cart.ToList();
             }
@@ -49,14 +49,14 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
                 list.MenuItem = await _db.MenuItem.FirstOrDefaultAsync(m => m.Id == list.MenuItemId);
                 detailCart.OrderHeader.OrderTotal = detailCart.OrderHeader.OrderTotal + (list.MenuItem.Price * list.Count);
                 list.MenuItem.Description = SD.ConvertToRawHtml(list.MenuItem.Description);
-                if(list.MenuItem.Description.Length > 300)
+                if (list.MenuItem.Description.Length > 300)
                 {
                     list.MenuItem.Description = list.MenuItem.Description.Substring(0, 00) + "...";
                 }
             }
             detailCart.OrderHeader.OrderTotalOriginal = detailCart.OrderHeader.OrderTotal;
 
-            if(HttpContext.Session.GetString(SD.ssCouponCode) != null)
+            if (HttpContext.Session.GetString(SD.ssCouponCode) != null)
             {
                 detailCart.OrderHeader.CouponCode = HttpContext.Session.GetString(SD.ssCouponCode);
                 var couponFromDb = await _db.Coupon.Where(c => c.Name.ToLower() == detailCart.OrderHeader.CouponCode.ToLower()).FirstOrDefaultAsync();
@@ -89,7 +89,7 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
             {
                 list.MenuItem = await _db.MenuItem.FirstOrDefaultAsync(m => m.Id == list.MenuItemId);
                 detailCart.OrderHeader.OrderTotal = detailCart.OrderHeader.OrderTotal + (list.MenuItem.Price * list.Count);
-                
+
             }
             detailCart.OrderHeader.OrderTotalOriginal = detailCart.OrderHeader.OrderTotal;
             detailCart.OrderHeader.PickupName = applicationUser.Name;
@@ -135,7 +135,7 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
             detailCart.OrderHeader.OrderTotalOriginal = 0;
 
 
-            
+
 
             foreach (var item in detailCart.listCart)
             {
@@ -180,7 +180,7 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
             var service = new ChargeService();
             Charge charge = service.Create(options);
 
-            if(charge.BalanceTransactionId == null)
+            if (charge.BalanceTransactionId == null)
             {
                 detailCart.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
             }
@@ -189,7 +189,7 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
                 detailCart.OrderHeader.TransactionId = charge.BalanceTransactionId;
             }
 
-            if(charge.Status.ToLower() == "succeeded")
+            if (charge.Status.ToLower() == "succeeded")
             {
                 detailCart.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
                 detailCart.OrderHeader.Status = SD.StatusSubmitted;
@@ -207,7 +207,7 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
 
         public IActionResult AddCoupon()
         {
-            if(detailCart.OrderHeader.CouponCode == null)
+            if (detailCart.OrderHeader.CouponCode == null)
             {
                 detailCart.OrderHeader.CouponCode = "";
             }
@@ -234,7 +234,7 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
         public async Task<IActionResult> Minus(int CartId)
         {
             var cart = await _db.ShoppingCart.FirstOrDefaultAsync(c => c.Id == CartId);
-            if(cart.Count == 1)
+            if (cart.Count == 1)
             {
                 _db.ShoppingCart.Remove(cart);
                 await _db.SaveChangesAsync();
@@ -247,7 +247,7 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
                 cart.Count -= 1;
                 await _db.SaveChangesAsync();
             }
-            
+
             return RedirectToAction(nameof(Index));
         }
 

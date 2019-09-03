@@ -121,22 +121,24 @@
 
                                 @{
                                     var orderTotalForStripe = Model.OrderHeader.OrderTotal * 100;
+
+                                    var OrderTotalForPayStack = Model.OrderHeader.OrderTotal * 100;
                                 }
 
 
                                 <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-                                        data-key="@Stripe.Value.PublishableKey"
-                                        data-amount="@orderTotalForStripe"
-                                        data-name="spice restaurant"
-                                        data-lable="place order"
-                                        data-description="Spice Restaurant Online Payment."
-                                        data-locale="auto"
-                                        data-allow-remember-me="false"
-                                        data-image="https://stripe.com/img/documentation/checkout/marketplace.png">
-                                </script>
-                                <script>
-                                    document.getElementsByClassName("stripe-button-el")[0].style.display = 'none';
-                                </script>
+                                            data-key="@Stripe.Value.PublishableKey"
+                                            data-amount="@orderTotalForStripe"
+                                            data-name="spice restaurant"
+                                            data-lable="place order"
+                                            data-description="Spice Restaurant Online Payment."
+                                            data-locale="auto"
+                                            data-allow-remember-me="false"
+                                            data-image="https://stripe.com/img/documentation/checkout/marketplace.png">
+                                    </script>
+                                    <script>
+                                        document.getElementsByClassName("stripe-button-el")[0].style.display = 'none';
+                                    </script>
                                 <button type="submit" id="btnPlaceOrder" onclick="return validateInput()" value="Place order" class="btn btn-success form-control">Place Order</button>
                             </div>
                         </div>

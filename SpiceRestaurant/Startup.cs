@@ -16,7 +16,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SpiceRestaurant.Models;
 using SpiceRestaurant.Utility;
 using Stripe;
-using PayStack.Net;
 
 namespace SpiceRestaurant
 {
@@ -48,13 +47,11 @@ namespace SpiceRestaurant
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            //services.AddTransient<IPieRepository, PieRepository>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
 
 
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
-            //services.Configure<PayStackSettings>(Configuration.GetSection("PayStack"));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
