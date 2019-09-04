@@ -145,7 +145,7 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
                     MenuItemId = item.MenuItemId,
                     OrderId = detailCart.OrderHeader.Id,
                     Description = item.MenuItem.Description,
-                    Name = item.MenuItem.Description,
+                    Name = item.MenuItem.Name,
                     Price = item.MenuItem.Price,
                     Count = item.Count
                 };
@@ -200,8 +200,8 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
             }
 
             await _db.SaveChangesAsync();
-            return RedirectToAction("Index", "Home");
-            //return RedirectToAction("Confirm", "Order", new { id = detailCart.OrderHeader.Id });
+            //return RedirectToAction("Index", "Home");
+            return RedirectToAction("Confirm", "Order", new { id = detailCart.OrderHeader.Id });
         }
 
 
