@@ -52,6 +52,16 @@ namespace SpiceRestaurant
 
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
+            
+            services.AddAuthentication().AddFacebook(faceBookOptions => {
+                faceBookOptions.AppId = "694256807668808";
+                faceBookOptions.AppSecret = "cc3430efa5f091ff2fb88ecaad144362";
+                });
+
+            services.AddAuthentication().AddGoogle(googleOptions => {
+                googleOptions.ClientId = "1071023721403-34mbv5eln8nhrh6hfqu6uk69kui7b9vl.apps.googleusercontent.com";
+                googleOptions.ClientSecret = "3xsIzCIjkTPQV-rLH3sZnL83";
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 

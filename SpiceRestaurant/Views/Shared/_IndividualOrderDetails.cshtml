@@ -1,9 +1,10 @@
 ﻿@model SpiceRestaurant.Models.ViewModels.OrderDetailsViewModel
+@using SpiceRestaurant.Utility
 @*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
 
-<form method="post">
+<form  asp-action="OrderPickup" asp-controller="Order" asp-route-orderId="@Model.OrderHeader.Id" method="post">
     <div class="container row border ml-1 backgroundWhiteBorder10Padding" style="width:100%">
         <div class="col-lg-8 col-12" style="border-right:1px solid #bbb9b9">
             <br />
@@ -91,7 +92,14 @@
                     <strong class="text-info">$@Model.OrderHeader.OrderTotal</strong>
                 </li>
             </ul>
-            <button type="submit" disabled class="btn btn-info form-control">@Model.OrderHeader.Status</button>
+            @if (Model.OrderHeader.Status.Equals(SD.StatusReady) && (User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.FrontDeskUser)))
+            {
+                <button type="submit" class="btn btn-success form-control"><i class="far fa-thumbs-up"></i> Confirm Pickup</button>
+            }
+            else
+            {
+                <button type="submit" disabled class="btn btn-info form-control">@Model.OrderHeader.Status</button>
+            }
         </div>
     </div>
 </form>
