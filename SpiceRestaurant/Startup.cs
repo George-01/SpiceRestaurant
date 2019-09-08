@@ -16,6 +16,8 @@ using Microsoft.Extensions.DependencyInjection;
 using SpiceRestaurant.Models;
 using SpiceRestaurant.Utility;
 using Stripe;
+using SpiceRestaurant.Service;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace SpiceRestaurant
 {
@@ -47,11 +49,13 @@ namespace SpiceRestaurant
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddTransient<ICategoryRepository, CategoryRepository>();
+            //services.AddTransient<ICategoryRepository, CategoryRepository>();
 
-
+            services.AddScoped<IDbInitializer, DbInitializer>();
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
-
+            services.AddSingleton<IEmailSender, EmailSender>();
+            services.Configure<EmailOptions>(Configuration);
+            
             
             services.AddAuthentication().AddFacebook(faceBookOptions => {
                 faceBookOptions.AppId = "694256807668808";
@@ -75,7 +79,7 @@ namespace SpiceRestaurant
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -90,6 +94,7 @@ namespace SpiceRestaurant
             }
 
             StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
+            dbInitializer.Initialize();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();

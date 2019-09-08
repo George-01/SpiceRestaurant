@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpiceRestaurant.Data;
@@ -19,13 +20,15 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly IEmailSender _emailSender;
 
         [BindProperty]
         public OrderDetailsCart detailCart { get; set; }
 
-        public CartController(ApplicationDbContext db)
+        public CartController(ApplicationDbContext db, IEmailSender emailSender)
         {
             _db = db;
+            _emailSender = emailSender;
         }
         public async Task<IActionResult> Index()
         {
@@ -114,7 +117,7 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Summary")]
-        public async Task<IActionResult> SummaryPost(string stripeToken)
+        public async Task<IActionResult> SummaryPost(string stripeEmail, string stripeToken)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -153,6 +156,7 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
                 detailCart.OrderHeader.OrderTotalOriginal += orderDetails.Count * orderDetails.Price;
                 _db.OrderDetails.Add(orderDetails);
             }
+
             if (HttpContext.Session.GetString(SD.ssCouponCode) != null)
             {
                 detailCart.OrderHeader.CouponCode = HttpContext.Session.GetString(SD.ssCouponCode);
@@ -170,6 +174,7 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
             await _db.SaveChangesAsync();
 
 
+            //Stripe Logic
             var options = new ChargeCreateOptions
             {
                 Amount = Convert.ToInt32(detailCart.OrderHeader.OrderTotal * 100),
@@ -192,6 +197,11 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
 
             if (charge.Status.ToLower() == "succeeded")
             {
+                //email for successful order
+                await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value)
+                    .FirstOrDefault()
+                    .Email, "Spice Restaurant - Order created " + detailCart.OrderHeader.Id.ToString(), "Order has been submitted successfully.");
+
                 detailCart.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
                 detailCart.OrderHeader.Status = SD.StatusSubmitted;
             }

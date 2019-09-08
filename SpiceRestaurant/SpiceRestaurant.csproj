@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="Polly" Version="7.1.0" />
     <PackageReference Include="Remita.Plugin" Version="1.1.1" />
+    <PackageReference Include="Sendgrid" Version="9.12.0" />
     <PackageReference Include="Stripe.net" Version="21.7.0" />
     <PackageReference Include="TinyMCE" Version="5.0.14" />
   </ItemGroup>

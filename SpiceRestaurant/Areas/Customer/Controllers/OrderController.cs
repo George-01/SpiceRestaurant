@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpiceRestaurant.Data;
@@ -19,10 +20,12 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
     {
         private readonly ApplicationDbContext _db;
         private int PageSize = 2;
+        private readonly IEmailSender _emailSender;
 
-        public OrderController(ApplicationDbContext db)
+        public OrderController(ApplicationDbContext db, IEmailSender emailSender)
         {
             _db = db;
+            _emailSender = emailSender;
         }
 
         [Authorize]
@@ -147,6 +150,9 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
             await _db.SaveChangesAsync();
 
             //Notification Email to User for pickup
+            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserId)
+                    .FirstOrDefault()
+                    .Email, "Spice Restaurant - Order Ready for Pickup " + orderHeader.Id.ToString(), "Order is ready for pickup.");
 
             return RedirectToAction("ManageOrder", "Order");
         }
@@ -159,6 +165,9 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
             await _db.SaveChangesAsync();
 
             //Notification Email to User for pickup
+            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserId)
+                    .FirstOrDefault()
+                    .Email, "Spice Restaurant - Order cancelled " + orderHeader.Id.ToString(), "Order has been cancelled sucessfully.");
 
             return RedirectToAction("ManageOrder", "Order");
         }
@@ -267,6 +276,9 @@ namespace SpiceRestaurant.Areas.Customer.Controllers
             await _db.SaveChangesAsync();
 
             //Notification Email to User for pickup
+            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserId)
+                    .FirstOrDefault()
+                    .Email, "Spice Restaurant - Order Completed " + orderHeader.Id.ToString(), "Order has been completed sucessfully.");
 
             return RedirectToAction("OrderPickUp", "Order");
         }
